@@ -175,7 +175,7 @@ bash 参赛资料/eval/run.sh --mode perf --base-url http://127.0.0.1:8088/v1 --
 python3 工具/scan.py --tag marlin_pair --concurrency 1 --concurrency 4 --concurrency 8 --requests 24 --log-iterations 0 --profile "s=2048,seqs=8"
 ```
 
-CUTLASS 的 AIPerf 确认（约 21 分钟）。三档均和上述同条件 Marlin 对照比较；原门槛未通过的记录不改，使用 §4.4 中预先固定的新门槛：
+CUTLASS 的 AIPerf 确认（约 21 分钟）。三档均和上述同条件 Marlin 对照比较；原门槛未通过的记录不改，使用 `交付/4_优化方案说明.md` 中预先固定的新门槛：
 
 ```bash
 python3 工具/scan.py --tag cutlass --model-dir $HOME/uclode/models/Qwen3.8-27B-FP8-channel --concurrency 1 --concurrency 4 --concurrency 8 --requests 24 --log-iterations 0 --profile "s=2048,seqs=8,backend=cutlass"
