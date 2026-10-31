@@ -58,6 +58,6 @@ python3 工具/accuracy_run.py --timeout 3600 --mode accuracy --base-url http://
 | 演示 | 现场真实运行，流程见 [Demo 脚本](交付/Demo脚本.md)；备用录屏在 GitHub Release |
 | 原始结果 | GitHub Release，见 [证据索引](交付/证据索引.md) |
 
-全部脚本的用法见 [工具/README.md](工具/README.md)，设计依据、预测和每次决策的修订记录见 `最终思路.md`。
+全部脚本的用法见 [工具/README.md](工具/README.md)，设计依据、预测和门槛修订见 [优化方案说明](交付/4_优化方案说明.md)。
 
 原始测试结果约 160MB，单独打包在 GitHub Release，文件名和 SHA-256 见 [证据索引](交付/证据索引.md)。仓库不含模型权重、真实密钥和赛方资料。

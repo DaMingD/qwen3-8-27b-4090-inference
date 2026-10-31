@@ -1,6 +1,6 @@
 # 上机脚本
 
-对应 [最终思路.md](../最终思路.md)。把 `工具/` 和 `参赛资料/eval/` 传到服务器的同一个目录下，在这个目录里运行。
+设计依据见 [优化方案说明](../交付/4_优化方案说明.md)。把 `工具/` 和 `参赛资料/eval/` 传到服务器的同一个目录下，在这个目录里运行。
 
 脚本默认工作目录是 `~/uclode`，模型目录是 `/model/ModelScope/Qwen/Qwen3.8-27B-FP8`。如果不一样，用环境变量 `WORK`、`MODEL_DIR` 改。服务默认只监听 `127.0.0.1`。
 
@@ -31,7 +31,7 @@
 
 **计时口径已修正。** vLLM 的 `iteration elapsed time` 只是 `future.result()` 的等待时间。kernel 和上下文斜率脚本改用客户端请求/流式区间计时，保留事件记录；`log_evidence.py` 不再用日志耗时拟合 GPU 成本或共享系数 λ。日志仍用于核对 token 数与批次组成，P2 需要另做 profiler/CUDA event 测量。
 
-**决策。** G2 已定：`max-num-seqs=8`、预算 2048。Triton 淘汰；CUTLASS 通过性能条件，是否采用由方案 A 的 IFBench 决定，退路是同配置的 Marlin。基线质量：IFBench 79/100，小测试集 29/30（[附录 D.7、D.8](../最终思路.md)）。方案 A 不开 MTP。最终配置和质量判定以 [结果表](../交付/结果表.md) 为准。不得把成本模型的预计吞吐写成 AIPerf 实测结果。
+**决策。** G2 已定：`max-num-seqs=8`、预算 2048。Triton 淘汰；CUTLASS 通过性能条件，是否采用由方案 A 的 IFBench 决定，退路是同配置的 Marlin。基线质量：IFBench 79/100，小测试集 29/30（[Benchmark 测试报告](../交付/3_Benchmark测试报告.md)）。方案 A 不开 MTP。最终配置和质量判定以 [结果表](../交付/结果表.md) 为准。不得把成本模型的预计吞吐写成 AIPerf 实测结果。
 
 FlashInfer 首次 JIT 编译需要 CUDA Toolkit、C++ 编译器（`g++`）和 `ninja`。这台服务器已经补齐；其他机器要先检查。
 
@@ -143,7 +143,7 @@ python3 工具/kernel_bench.py compare ~/uclode/kernel/marlin.json ~/uclode/kern
 python3 工具/kernel_bench.py compare ~/uclode/kernel/marlin.json ~/uclode/kernel/cutlass.json
 ```
 
-按 [第 4.4 节](../最终思路.md) 的规则决定。达标的路径用 AIPerf 小样本确认：
+按 [优化方案说明中的门槛和修订记录](../交付/4_优化方案说明.md#门槛和修订记录) 的规则决定。达标的路径用 AIPerf 小样本确认：
 
 ```bash
 python3 工具/scan.py --tag kernel --concurrency 8 --requests 24 --profile "seqs=8" --profile "seqs=8,backend=triton"
@@ -235,7 +235,7 @@ bash 工具/serve.sh stop; python3 工具/scan.py --tag mtp --concurrency 1 --co
 bash 工具/serve.sh stop; unset VLLM_LOGGING_LEVEL; NAME=baseline_acc LOG_REQ=1 MAX_SEQS=4 bash 工具/serve.sh start
 ```
 
-赛方脚本的 IFBench 客户端超时是 600 秒，改不了（原因见 `accuracy_run.py` 开头和最终思路附录 D.7），所以用 `accuracy_run.py`。2026-10-31 的基线在 87/100 时停下，用下面的命令续跑，服务不用重启。先停掉原来的串行脚本，再停评测进程，不要动 `vllm serve`；备份后再续跑。
+赛方脚本的 IFBench 客户端超时是 600 秒，改不了（原因见 `accuracy_run.py` 开头和[复验说明](../交付/6_复验说明.md)），所以用 `accuracy_run.py`。2026-10-31 的基线在 87/100 时停下，用下面的命令续跑，服务不用重启。先停掉原来的串行脚本，再停评测进程，不要动 `vllm serve`；备份后再续跑。
 
 ```bash
 python3 工具/accuracy_run.py --timeout 3600 --resume ~/uclode/eval/baseline_accuracy/accuracy --mode accuracy --base-url http://127.0.0.1:8088/v1 --model qwen3.8-27b-fp8 --output-dir ~/uclode/eval/baseline_accuracy_resume && python3 工具/ifbench_tool.py scan ~/uclode/eval/baseline_accuracy_resume/accuracy && python3 工具/task_suite.py run --out ~/uclode/tasks/baseline.json
@@ -249,7 +249,7 @@ python3 工具/accuracy_run.py --timeout 3600 --resume ~/uclode/eval/baseline_ac
 python3 工具/task_suite.py grade /path/to/baseline.json --out /path/to/baseline_graded.json
 ```
 
-基线质量队列会在 IFBench 成功后自动接小测试集，结束时间的分支不自动判断，由值守者处理：IFBench 结束时查 [最终思路第 8 节](../最终思路.md) 的表；到 00:45（IFBench 在 00:33 后才结束时，就在结束时）小测试集还在跑，就停掉它，已完成的题已保存，然后启动第七步的队列。
+基线质量队列会在 IFBench 成功后自动接小测试集，结束时间的分支不自动判断，由值守者处理：IFBench 结束时由值守者根据实际时间决定后续安排；到 00:45（IFBench 在 00:33 后才结束时，就在结束时）小测试集还在跑，就停掉它，已完成的题已保存，然后启动第七步的队列。
 
 ```bash
 pkill -f "task_suite.py run"

@@ -5,3 +5,7 @@
 *.mp4
 __pycache__/
 .DS_Store
+
+# 本地设计笔记
+/名词表.md
+/最终思路.md
