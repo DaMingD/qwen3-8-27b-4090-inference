@@ -31,7 +31,7 @@
 
 **计时口径已修正。** vLLM 的 `iteration elapsed time` 只是 `future.result()` 的等待时间。kernel 和上下文斜率脚本改用客户端请求/流式区间计时，保留事件记录；`log_evidence.py` 不再用日志耗时拟合 GPU 成本或共享系数 λ。日志仍用于核对 token 数与批次组成，P2 需要另做 profiler/CUDA event 测量。
 
-**决策。** G2 已定：`max-num-seqs=8`、预算 2048。Triton 淘汰；CUTLASS 通过性能条件，是否采用由方案 A 的 IFBench 决定，退路是同配置的 Marlin。基线质量：IFBench 79/100，小测试集 29/30（[Benchmark 测试报告](../交付/3_Benchmark测试报告.md)）。方案 A 不开 MTP。最终配置和质量判定以 [结果表](../交付/结果表.md) 为准。不得把成本模型的预计吞吐写成 AIPerf 实测结果。
+**决策。** G2 已定：`max-num-seqs=8`、预算 2048。Triton 淘汰；CUTLASS 通过性能条件，也满足预设质量门槛，已采用；退路是同配置的 Marlin。基线质量：IFBench 79/100，小测试集 29/30（[Benchmark 测试报告](../交付/3_Benchmark测试报告.md)）。方案 A 不开 MTP。最终配置和质量判定以 [结果表](../交付/结果表.md) 为准。不得把成本模型的预计吞吐写成 AIPerf 实测结果。
 
 FlashInfer 首次 JIT 编译需要 CUDA Toolkit、C++ 编译器（`g++`）和 `ninja`。这台服务器已经补齐；其他机器要先检查。
 
