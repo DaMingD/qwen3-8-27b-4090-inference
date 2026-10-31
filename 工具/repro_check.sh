@@ -36,9 +36,14 @@ low() { nice -n 15 "$@"; }
 
 build() {
   local setup convert hashed=1 mismatched=-1 lock_diff=-1
+  if [[ ! -s "$ORIGIN/requirements.lock" ]]; then
+    echo "缺少原环境依赖清单：$ORIGIN/requirements.lock；未开始构建。" >&2
+    return 2
+  fi
   export CUDA_VISIBLE_DEVICES=""  # 显卡可能正在跑评测，这一级全程看不到 GPU
-  run env "WORK=$REPRO" GPU_CHECK=0 nice -n 15 bash 工具/setup_env.sh
+  run env "WORK=$REPRO" GPU_CHECK=0 "REQUIREMENTS_LOCK=$ORIGIN/requirements.lock" nice -n 15 bash 工具/setup_env.sh
   setup=$?
+  (( setup == 0 )) || return "$setup"
   run nice -n 15 "$REPRO/venv-vllm/bin/python" 工具/convert_fp8.py --bf16 "$BF16" --fp8 "$FP8" --out "$REPRO/$CHANNEL"
   convert=$?
   if [[ "${DRY_RUN:-0}" != 1 ]]; then
