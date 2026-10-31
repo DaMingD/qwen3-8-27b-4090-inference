@@ -195,6 +195,11 @@ def cmd_run(args):
         args.defer_code = True
         print("没有可用的隔离方式，代码题保存原始回答并标记待评分，之后用 grade 完成。", flush=True)
     tasks = {t["name"]: t for t in all_tasks()}
+    if args.tasks:
+        names = args.tasks.split(",")
+        if set(names) - set(tasks):
+            raise SystemExit(f"没有这些题目：{sorted(set(names) - set(tasks))}")
+        tasks = {name: tasks[name] for name in names}
     url = args.base_url.rstrip("/") + "/chat/completions"
     jobs = [(task, repeat) for task in tasks.values() for repeat in range(args.repeats)]
     rows = []
@@ -277,6 +282,7 @@ def main():
     run.add_argument("--out", required=True)
     run.add_argument("--base-url", default="http://127.0.0.1:8088/v1")
     run.add_argument("--model", default="qwen3.8-27b-fp8")
+    run.add_argument("--tasks", help="只跑这些题目，逗号分隔，默认全部")
     run.add_argument("--repeats", type=int, default=2)
     run.add_argument("--concurrency", type=int, default=2)
     run.add_argument("--max-tokens", type=int, default=8192)

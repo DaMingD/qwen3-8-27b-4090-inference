@@ -239,6 +239,7 @@ def main():
         "quality_table": quality_markdown(verdict, info, base_tasks_text, base_summary),
         "noise_sentence": noise(night),
         "repro_sentence": repro(night),
+        "task_note": manual.get("task_note", ""),
         "mtp_sentence": manual.get("mtp_sentence", "MTP 分析未完成，不下结论，最终配置不开 MTP。"),
         "base_score": info["base_score"], "plan_score": info["plan_score"] if info["plan_score"] is not None else UNFINISHED,
         "base_tasks": base_tasks_text, "plan_tasks": f"{info['tasks'][0]}/{info['tasks'][1]}" if info.get("tasks") else UNFINISHED,
