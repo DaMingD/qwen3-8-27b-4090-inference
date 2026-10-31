@@ -303,7 +303,7 @@ bash 工具/repro_check.sh build
 GPU 空闲后运行复验二级，它先做一级没做的 GPU 算子验收。`REF` 换成要提交的并发 4、8 吞吐，`FINAL` 是 `cutlass` 或 `marlin`，结束时服务已停（约 15 分钟）。两级的 `passed` 都为 true 才算通过；`failed` 列出没过的项，依赖差异在 `requirements.diff`：
 
 ```bash
-FINAL=cutlass REF=4=76.31,8=116.70 bash 工具/repro_check.sh verify
+FINAL=cutlass REF=4=76.58,8=115.51 bash 工具/repro_check.sh verify
 ```
 
 看 IFBench 结果：

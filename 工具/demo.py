@@ -35,7 +35,7 @@ import task_suite  # noqa: E402
 CONCURRENCY = 8
 DEMO_TASKS = ("long_gap_30k", "logic_train", "code_lru")
 TASK_LABEL = {"long": "长文本理解", "logic": "逻辑推理", "code": "代码生成"}
-# kernel 对比得到的并发 8 预计吞吐（最终思路附录 C），在 AIPerf 之前算出，不是实测
+# kernel 对比得到的并发 8 预计吞吐（kernel_bench.py compare 的输出），在 AIPerf 之前算出，不是实测
 EXPECTED = {"Cutlass": 111.3, "Marlin": 90.1}
 DIM, BOLD, RESET = "\x1b[2m", "\x1b[1m", "\x1b[0m"
 

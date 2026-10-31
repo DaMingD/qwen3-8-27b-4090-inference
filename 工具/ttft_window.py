@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""检验官方表的 TTFT P95 是否来自窗口开头和小样本。对应最终思路 P5。
+"""检验官方表的 TTFT P95 是否来自窗口开头和小样本。对应预测 P5，见 交付/4_优化方案说明.md。
 
 用法：python3 工具/ttft_window.py ~/uclode/eval/baseline_perf/performance
 

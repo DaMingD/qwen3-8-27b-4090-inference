@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MTP 准入探针。对应最终思路 4.2 节。这些结果只用来定位异常，不能证明无偏或认定回滚有错。
+"""MTP 准入探针。这些结果只用来定位异常，不能证明无偏或认定回滚有错。
 
 探针 A（分布检验，默认采样参数）：
   python3 工具/probe_mtp.py sample --model-dir $MODEL --n 2000 --out a_base1.jsonl   # MTP 关

@@ -175,9 +175,18 @@ def repro(night):
     def state(result):
         if not result:
             return UNFINISHED
-        return "通过" if result["passed"] else f"未通过（{'、'.join(result.get('failed', []))}）"
+        if not result["passed"]:
+            return f"未通过（{'、'.join(result.get('failed', []))}）"
+        if result.get("recovery"):
+            return "首次未通过（权重哈希一致，依赖清单有版本漂移），按锁定清单修复后通过，这不是第二次从零构建"
+        return "通过"
+    def clean_install():
+        path = night / "repro/clean_install.exit" if night else None
+        if not path or not path.exists():
+            return ""
+        return "；修复后的安装脚本在空目录重新安装一次：" + ("通过" if path.read_text().strip() == "0" else "未通过")
     build, verify = load("repro_build.json"), load("repro_verify.json")
-    parts = ["一级（从零安装、重新转换权重并比对权重哈希和依赖清单，不含 GPU 算子）：" + state(build),
+    parts = ["一级（从零安装、重新转换权重并比对权重哈希和依赖清单，不含 GPU 算子）：" + state(build) + clean_install(),
              "二级（GPU 算子验收、上机启动、kernel、吞吐相差不超过 5%、赛方流程冒烟）：" + state(verify)]
     return "；".join(parts) + "。这是我们的自查，不是赛方标准；评测工具环境没有重新安装。"
 
